@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+  </style>
+</head>
+<body>
+  <div id="value"></div>
+  <script>
+
+    function createCanvas() {
+
+      var $canvas = document.createElement('canvas')
+
+      $canvas.setAttribute('id', 'basic')
+      $canvas.setAttribute('width', '500')
+      $canvas.setAttribute('height', '500')
+      document.body.prepend($canvas)
+
+    }
+
+    function drawAnimation() {
+        var $canvas = document.getElementById('basic'),
+            cw      = $canvas.width,
+            ch      = $canvas.height
+
+        var ctx = document.getElementById('basic').getContext('2d')
+
+        var cx     = cw / 2,
+            cy     = ch / 2,
+            radius = 100
+
+        // clear canvas
+        ctx.clearRect(0, 0, cw, ch);
+        // 圖形樣式
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; 
+
+        // 記錄變形之前的畫布
+        ctx.save(); 
+
+        // 移動變形的中心點
+        ctx.translate(cx, cy); 
+
+        // 用 Date() 得到一組數字
+        var time = new Date(),
+            rotate = ((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds()
+
+        ctx.rotate(rotate);
+        ctx.fillRect(0, 0, 200, 2); 
+
+        document.getElementById('value').innerHTML = rotate
+
+        // 恢復到變形之前的畫布
+        ctx.restore(); 
+        window.requestAnimationFrame(drawAnimation);
+    }
+    function draw() {
+      
+        var $canvas = document.getElementById('basic'),
+            cw      = $canvas.width,
+            ch      = $canvas.height
+
+        var ctx = document.getElementById('basic').getContext('2d')
+
+        var cx     = cw / 2,
+            cy     = ch / 2,
+            radius = 100
+
+
+        ctx.fillStyle   = 'hsl(0, 0%, 100%)';
+        ctx.strokeStyle = 'hsl(0, 0%, 70%)';
+        ctx.lineWidth   = 5;
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.stroke()
+        
+    }
+    function startDraw() {
+      createCanvas()
+      draw()
+      drawAnimation()
+    }
+    window.init = startDraw()
+  </script>
+</body>
+</html>
