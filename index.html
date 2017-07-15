@@ -4,85 +4,90 @@
   <meta charset="UTF-8">
   <title>Document</title>
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
 <body>
-  <div id="value"></div>
+  <canvas id="canvas"></canvas>
   <script>
+    General = {
+      canvas: document.getElementById('canvas'),
+      qty: 500,
+      obj: [],
+      speed: 1,
+      color: 'hsl(0, 0%, 0%)',
+      background   : 'hsl(0, 0%, 0%)',
+      windowWidth  : window.innerWidth,
+      windowHeight : window.innerHeight
+    }
+    function Bubble() {
+      var $canvas = General.canvas;
+      var windowWidth  = General.windowWidth,
+          windowHeight = General.windowHeight;
 
-    function createCanvas() {
-
-      var $canvas = document.createElement('canvas')
-
-      $canvas.setAttribute('id', 'basic')
-      $canvas.setAttribute('width', '500')
-      $canvas.setAttribute('height', '500')
-      document.body.prepend($canvas)
+      $canvas.setAttribute('width', windowWidth);
+      $canvas.setAttribute('height', windowHeight);
 
     }
-
-    function drawAnimation() {
-        var $canvas = document.getElementById('basic'),
-            cw      = $canvas.width,
-            ch      = $canvas.height
-
-        var ctx = document.getElementById('basic').getContext('2d')
-
-        var cx     = cw / 2,
-            cy     = ch / 2,
-            radius = 100
-
-        // clear canvas
-        ctx.clearRect(0, 0, cw, ch);
-        // 圖形樣式
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'; 
-
-        // 記錄變形之前的畫布
-        ctx.save(); 
-
-        // 移動變形的中心點
-        ctx.translate(cx, cy); 
-
-        // 用 Date() 得到一組數字
-        var time = new Date(),
-            rotate = ((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds()
-
-        ctx.rotate(rotate);
-        ctx.fillRect(0, 0, 200, 2); 
-
-        document.getElementById('value').innerHTML = rotate
-
-        // 恢復到變形之前的畫布
-        ctx.restore(); 
-        window.requestAnimationFrame(drawAnimation);
+    function run() {
+      for (var i = 0; i < General.qty; i++) {
+        General.obj[i] = new square()
+        General.obj[i].draw()
+      }
     }
-    function draw() {
-      
-        var $canvas = document.getElementById('basic'),
-            cw      = $canvas.width,
-            ch      = $canvas.height
+    function square() {
+      var ctx = General.canvas.getContext('2d')
 
-        var ctx = document.getElementById('basic').getContext('2d')
+      // Square Attribute
+      this.x = General.windowWidth  * Math.random();
+      this.y = General.windowHeight * Math.random();
+      this.size   = Math.floor(Math.random() * 10);
+      // this.size   = 200;
 
-        var cx     = cw / 2,
-            cy     = ch / 2,
-            radius = 100
+      // Move
+      this.movex  = Math.random() < 0.5 ? -1 : 1;
+      this.movey  = Math.random() < 0.5 ? -1 : 1;
+      this.speedx = Math.floor(Math.random() * 10) / 10;
+      this.speedy = Math.floor(Math.random() * 10) / 10;
 
+      // Draw
+      this.draw = function() {
+        ctx.fillStyle = General.color;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+        ctx.fill();
+      }
+      this.update = function() {
+        this.x += this.movex * this.speedx;
+        this.y += this.movey * this.speedy;
 
-        ctx.fillStyle   = 'hsl(0, 0%, 100%)';
-        ctx.strokeStyle = 'hsl(0, 0%, 70%)';
-        ctx.lineWidth   = 5;
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.stroke()
-        
+        // Bounce
+        if (this.x < 0 || (this.x + this.size) > General.windowWidth) {
+          this.movex = this.movex * -1
+        }
+        else if (this.y < 0 || (this.y + this.size) > General.windowHeight) {
+          this.movey = this.movey * -1
+        }
+      }
     }
-    function startDraw() {
-      createCanvas()
-      draw()
-      drawAnimation()
+    function move() {
+      // update()
+      var ctx = General.canvas.getContext('2d')
+      ctx.clearRect(0, 0, General.windowWidth, General.windowHeight)
+      for (var i = 0; i < General.qty; i++) {
+        General.obj[i].update()
+        General.obj[i].draw()
+      }
+      window.requestAnimationFrame(move)
     }
-    window.init = startDraw()
+    function init() {
+      Bubble();
+      run()
+      move()
+    }
+    window.init = init()
   </script>
 </body>
 </html>
